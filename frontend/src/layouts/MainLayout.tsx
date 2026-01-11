@@ -68,9 +68,6 @@ const MainLayout = () => {
                 </span>
               )}
             </Link>
-            <Link to="/admin/products" style={linkStyle}>
-              Panel
-            </Link>
           </nav>
         </div>
       </header>
