@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { getProducts } from "../api/products";
 import { Product } from "../types/product";
+import { useCart } from "../store/cart";
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
@@ -39,6 +40,7 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addItem } = useCart();
 
   useEffect(() => {
     let isMounted = true;
@@ -98,7 +100,7 @@ const ProductsPage = () => {
                   {formatPrice(product.price)}
                 </p>
               </div>
-              <button type="button" style={buttonStyle}>
+              <button type="button" style={buttonStyle} onClick={() => addItem(product)}>
                 Agregar al carrito
               </button>
             </article>
