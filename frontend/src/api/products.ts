@@ -10,6 +10,8 @@ export type ProductPayload = {
 
 export const getProducts = () => apiFetch<Product[]>("/products");
 
+export const getProduct = (id: number) => apiFetch<Product>(`/products/${id}`);
+
 export const createProduct = (payload: ProductPayload) =>
   apiFetch<Product>("/products/create", {
     method: "POST",

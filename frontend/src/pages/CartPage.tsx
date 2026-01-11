@@ -3,6 +3,7 @@ import { FiSave, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { saveCart } from "../api/cart";
 import { useCart } from "../store/cart";
+import { useToast } from "../store/toast";
 
 const formatPrice = (value: number) => {
   return new Intl.NumberFormat("es-AR", {
@@ -13,6 +14,7 @@ const formatPrice = (value: number) => {
 
 const CartPage = () => {
   const { items, updateQuantity, removeItem, clear } = useCart();
+  const { push } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,7 @@ const CartPage = () => {
         }))
       });
       setSaveMessage("Carrito guardado correctamente");
+      push({ message: "Carrito guardado correctamente", tone: "success" });
       clear();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");

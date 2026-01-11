@@ -1,5 +1,6 @@
 ﻿import { Link, Outlet } from "react-router-dom";
 import { FiLogIn, FiLogOut, FiPackage, FiSettings, FiShoppingCart } from "react-icons/fi";
+import ToastStack from "../components/ToastStack";
 import { useAuth } from "../store/auth";
 import { useCart } from "../store/cart";
 
@@ -45,6 +46,7 @@ const MainLayout = () => {
           <Outlet />
         </div>
       </main>
+      <ToastStack />
     </div>
   );
 };
