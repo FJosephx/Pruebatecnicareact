@@ -57,6 +57,9 @@ Payload esperado para `/cart`:
 }
 ```
 
+## Imagenes
+Las imagenes de producto se manejan por URL en el campo `image_url`.
+
 ## Descripcion tecnica
 - Estado global del carrito con Context y persistencia en `localStorage`.
 - UI de listado con boton "Agregar al carrito" y detalles de producto.
