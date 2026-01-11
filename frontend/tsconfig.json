@@ -11,7 +11,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true
+    "types": ["jest", "node", "aria-query", "@testing-library/jest-dom"],
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src"]
 }
