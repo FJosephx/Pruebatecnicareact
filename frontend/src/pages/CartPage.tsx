@@ -1,5 +1,6 @@
-import { ChangeEvent } from "react";
+﻿import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { saveCart } from "../api/cart";
 import { useCart } from "../store/cart";
 
 const tableStyle: React.CSSProperties = {
@@ -33,10 +34,22 @@ const buttonStyle: React.CSSProperties = {
   cursor: "pointer"
 };
 
+const primaryButtonStyle: React.CSSProperties = {
+  padding: "0.65rem 1.2rem",
+  borderRadius: "8px",
+  border: "none",
+  background: "#111827",
+  color: "#ffffff",
+  cursor: "pointer",
+  fontWeight: 600
+};
+
 const summaryStyle: React.CSSProperties = {
   marginTop: "1.5rem",
   display: "flex",
-  justifyContent: "flex-end"
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "1rem"
 };
 
 const formatPrice = (value: number) => {
@@ -48,6 +61,9 @@ const formatPrice = (value: number) => {
 
 const CartPage = () => {
   const { items, updateQuantity, removeItem } = useCart();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -57,6 +73,26 @@ const CartPage = () => {
       return;
     }
     updateQuantity(id, nextValue);
+  };
+
+  const handleSaveCart = async () => {
+    setIsSaving(true);
+    setSaveMessage(null);
+    setError(null);
+
+    try {
+      await saveCart({
+        items: items.map((item) => ({
+          product_id: item.id,
+          quantity: item.quantity
+        }))
+      });
+      setSaveMessage("Carrito guardado correctamente");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error inesperado");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (items.length === 0) {
@@ -108,6 +144,13 @@ const CartPage = () => {
         </tbody>
       </table>
       <div style={summaryStyle}>
+        <div>
+          <button type="button" style={primaryButtonStyle} onClick={handleSaveCart} disabled={isSaving}>
+            {isSaving ? "Guardando..." : "Guardar carrito"}
+          </button>
+          {saveMessage && <p style={{ color: "#047857", margin: "0.5rem 0 0" }}>{saveMessage}</p>}
+          {error && <p style={{ color: "#b91c1c", margin: "0.5rem 0 0" }}>Error: {error}</p>}
+        </div>
         <strong>Total: {formatPrice(total)}</strong>
       </div>
     </section>
