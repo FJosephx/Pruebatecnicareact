@@ -1,56 +1,8 @@
 ﻿import { ChangeEvent, useState } from "react";
+import { FiSave, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { saveCart } from "../api/cart";
 import { useCart } from "../store/cart";
-
-const tableStyle: React.CSSProperties = {
-  width: "100%",
-  borderCollapse: "collapse",
-  background: "#ffffff",
-  borderRadius: "12px",
-  overflow: "hidden",
-  boxShadow: "0 6px 14px rgba(15, 23, 42, 0.08)"
-};
-
-const cellStyle: React.CSSProperties = {
-  padding: "0.9rem",
-  borderBottom: "1px solid #e5e7eb",
-  textAlign: "left"
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "70px",
-  padding: "0.35rem 0.5rem",
-  borderRadius: "6px",
-  border: "1px solid #d1d5db"
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: "0.4rem 0.7rem",
-  borderRadius: "6px",
-  border: "none",
-  background: "#ef4444",
-  color: "#ffffff",
-  cursor: "pointer"
-};
-
-const primaryButtonStyle: React.CSSProperties = {
-  padding: "0.65rem 1.2rem",
-  borderRadius: "8px",
-  border: "none",
-  background: "#111827",
-  color: "#ffffff",
-  cursor: "pointer",
-  fontWeight: 600
-};
-
-const summaryStyle: React.CSSProperties = {
-  marginTop: "1.5rem",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "1rem"
-};
 
 const formatPrice = (value: number) => {
   return new Intl.NumberFormat("es-AR", {
@@ -99,8 +51,8 @@ const CartPage = () => {
   if (items.length === 0) {
     return (
       <section>
-        <h2 style={{ marginTop: 0 }}>Carrito</h2>
-        {saveMessage && <p style={{ color: "#047857" }}>{saveMessage}</p>}
+        <h2 className="page__title">Carrito</h2>
+        {saveMessage && <p className="alert alert--success">{saveMessage}</p>}
         <p>
           Tu carrito esta vacio. <Link to="/">Volver a productos</Link>.
         </p>
@@ -110,48 +62,52 @@ const CartPage = () => {
 
   return (
     <section>
-      <h2 style={{ marginTop: 0 }}>Carrito</h2>
-      <table style={tableStyle}>
+      <h2 className="page__title">Carrito</h2>
+      <table className="cart-table">
         <thead>
           <tr>
-            <th style={cellStyle}>Producto</th>
-            <th style={cellStyle}>Precio</th>
-            <th style={cellStyle}>Cantidad</th>
-            <th style={cellStyle}>Subtotal</th>
-            <th style={cellStyle}>Acciones</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
             <tr key={item.id}>
-              <td style={cellStyle}>{item.name}</td>
-              <td style={cellStyle}>{formatPrice(item.price)}</td>
-              <td style={cellStyle}>
+              <td data-label="Producto">{item.name}</td>
+              <td data-label="Precio">{formatPrice(item.price)}</td>
+              <td data-label="Cantidad">
                 <input
                   type="number"
                   min={1}
                   value={item.quantity}
                   onChange={handleQuantityChange(item.id)}
-                  style={inputStyle}
+                  className="input"
                 />
               </td>
-              <td style={cellStyle}>{formatPrice(item.price * item.quantity)}</td>
-              <td style={cellStyle}>
-                <button type="button" style={buttonStyle} onClick={() => removeItem(item.id)}>
-                  Eliminar
+              <td data-label="Subtotal">{formatPrice(item.price * item.quantity)}</td>
+              <td data-label="Acciones">
+                <button
+                  type="button"
+                  className="button button--danger"
+                  onClick={() => removeItem(item.id)}
+                >
+                  <FiTrash2 /> Eliminar
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <div style={summaryStyle}>
+      <div className="cart-actions">
         <div>
-          <button type="button" style={primaryButtonStyle} onClick={handleSaveCart} disabled={isSaving}>
-            {isSaving ? "Guardando..." : "Guardar carrito"}
+          <button type="button" className="button button--primary" onClick={handleSaveCart} disabled={isSaving}>
+            <FiSave /> {isSaving ? "Guardando..." : "Guardar carrito"}
           </button>
-          {saveMessage && <p style={{ color: "#047857", margin: "0.5rem 0 0" }}>{saveMessage}</p>}
-          {error && <p style={{ color: "#b91c1c", margin: "0.5rem 0 0" }}>Error: {error}</p>}
+          {saveMessage && <p className="alert alert--success">{saveMessage}</p>}
+          {error && <p className="alert alert--error">Error: {error}</p>}
         </div>
         <strong>Total: {formatPrice(total)}</strong>
       </div>

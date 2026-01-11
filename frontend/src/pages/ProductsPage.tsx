@@ -1,33 +1,8 @@
 ﻿import { useEffect, useState } from "react";
+import { FiPlus } from "react-icons/fi";
 import { getProducts } from "../api/products";
 import { Product } from "../types/product";
 import { useCart } from "../store/cart";
-
-const gridStyle: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "1rem"
-};
-
-const cardStyle: React.CSSProperties = {
-  padding: "1rem",
-  borderRadius: "12px",
-  background: "#ffffff",
-  boxShadow: "0 6px 14px rgba(15, 23, 42, 0.08)",
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.75rem"
-};
-
-const buttonStyle: React.CSSProperties = {
-  marginTop: "auto",
-  padding: "0.6rem 0.9rem",
-  background: "#111827",
-  color: "#ffffff",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer"
-};
 
 const formatPrice = (value: number) => {
   return new Intl.NumberFormat("es-AR", {
@@ -79,32 +54,40 @@ const ProductsPage = () => {
   if (error) {
     return (
       <div>
-        <h2 style={{ marginTop: 0 }}>Productos</h2>
-        <p style={{ color: "#b91c1c" }}>Error: {error}</p>
+        <h2 className="page__title">Productos</h2>
+        <p className="alert alert--error">Error: {error}</p>
       </div>
     );
   }
 
   return (
     <section>
-      <h2 style={{ marginTop: 0 }}>Productos</h2>
+      <h2 className="page__title">Productos</h2>
       {products.length === 0 ? (
         <p>No hay productos disponibles.</p>
       ) : (
-        <div style={gridStyle}>
-          {products.map((product) => (
-            <article key={product.id} style={cardStyle}>
-              <div>
-                <h3 style={{ margin: "0 0 0.25rem" }}>{product.name}</h3>
-                <p style={{ margin: 0, color: "#4b5563" }}>
-                  {formatPrice(product.price)}
-                </p>
-              </div>
-              <button type="button" style={buttonStyle} onClick={() => addItem(product)}>
-                Agregar al carrito
-              </button>
-            </article>
-          ))}
+        <div className="product-grid">
+          {products.map((product) => {
+            const initial = product.name.trim().charAt(0).toUpperCase();
+            return (
+              <article key={product.id} className="product-card">
+                <div className="product-card__media">{initial || "P"}</div>
+                <div className="product-card__body">
+                  <div>
+                    <h3 className="product-card__title">{product.name}</h3>
+                    <p className="product-card__price">{formatPrice(product.price)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="button button--primary"
+                    onClick={() => addItem(product)}
+                  >
+                    <FiPlus /> Agregar al carrito
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>
