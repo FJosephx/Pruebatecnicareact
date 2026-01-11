@@ -59,7 +59,7 @@ const AdminEditProductPage = () => {
         setForm({
           name: data.name,
           price: data.price.toString(),
-          image_url: data.image_url ?? "",
+          image_url: data.image_url ?? data.image_file_url ?? "",
           image_file: null
         });
       } catch (err) {
@@ -118,7 +118,8 @@ const AdminEditProductPage = () => {
         id: product.id,
         name: form.name.trim(),
         price: priceValue,
-        image_url: form.image_url.trim()
+        image_url: form.image_url.trim(),
+        image_file: form.image_file ?? null
       });
       navigate("/admin/products");
     } catch (err) {

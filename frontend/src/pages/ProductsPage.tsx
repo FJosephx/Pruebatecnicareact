@@ -97,18 +97,19 @@ const ProductsPage = () => {
     <section>
       <h2 className="page__title">Productos</h2>
       <div className="product-grid">
-        {products.map((product) => {
-          const initial = product.name.trim().charAt(0).toUpperCase();
-          return (
-            <article key={product.id} className="product-card">
-              <Link to={`/products/${product.id}`} className="product-card__media">
-                {product.image_url ? (
-                  <img
-                    className="product-card__image"
-                    src={product.image_url}
-                    alt={product.name}
-                    loading="lazy"
-                  />
+          {products.map((product) => {
+            const initial = product.name.trim().charAt(0).toUpperCase();
+            const imageSrc = product.image_url || product.image_file_url;
+            return (
+              <article key={product.id} className="product-card">
+                <Link to={`/products/${product.id}`} className="product-card__media">
+                  {imageSrc ? (
+                    <img
+                      className="product-card__image"
+                      src={imageSrc}
+                      alt={product.name}
+                      loading="lazy"
+                    />
                 ) : (
                   <span>{initial || "P"}</span>
                 )}

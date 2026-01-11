@@ -86,8 +86,8 @@ const ProductDetailPage = () => {
   return (
     <section className="product-detail">
       <div className="product-detail__media">
-        {product.image_url ? (
-          <img src={product.image_url} alt={product.name} />
+        {product.image_url || product.image_file_url ? (
+          <img src={product.image_url || product.image_file_url} alt={product.name} />
         ) : (
           <div className="product-detail__placeholder">{product.name.slice(0, 1).toUpperCase()}</div>
         )}
