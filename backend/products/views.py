@@ -11,6 +11,12 @@ def _serialize_product(product: Product) -> dict:
     return {"id": product.id, "name": product.name, "price": float(product.price)}
 
 
+def _ensure_staff(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({"detail": "Not authorized"}, status=403)
+    return None
+
+
 def products_list(_request):
     products = [_serialize_product(product) for product in Product.objects.all()]
     return JsonResponse(products, safe=False)
@@ -18,6 +24,10 @@ def products_list(_request):
 
 @csrf_exempt
 def products_create(request):
+    forbidden = _ensure_staff(request)
+    if forbidden:
+        return forbidden
+
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
@@ -46,6 +56,10 @@ def products_create(request):
 
 @csrf_exempt
 def products_update(request):
+    forbidden = _ensure_staff(request)
+    if forbidden:
+        return forbidden
+
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
