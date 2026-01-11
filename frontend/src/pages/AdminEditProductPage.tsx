@@ -9,7 +9,6 @@ type FormState = {
   name: string;
   price: string;
   image_url: string;
-  image_file?: File | null;
 };
 
 const formatPrice = (value: number) => {
@@ -27,27 +26,13 @@ const AdminEditProductPage = () => {
   const [form, setForm] = useState<FormState>({
     name: "",
     price: "",
-    image_url: "",
-    image_file: null
+    image_url: ""
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const previewUrl = useMemo(() => {
-    if (form.image_file) {
-      return URL.createObjectURL(form.image_file);
-    }
-    return form.image_url;
-  }, [form.image_file, form.image_url]);
-
-  useEffect(() => {
-    return () => {
-      if (form.image_file) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [form.image_file, previewUrl]);
+  const previewUrl = useMemo(() => form.image_url, [form.image_url]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -59,8 +44,7 @@ const AdminEditProductPage = () => {
         setForm({
           name: data.name,
           price: data.price.toString(),
-          image_url: data.image_url ?? data.image_file_url ?? "",
-          image_file: null
+          image_url: data.image_url ?? ""
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error inesperado");
@@ -118,8 +102,7 @@ const AdminEditProductPage = () => {
         id: product.id,
         name: form.name.trim(),
         price: priceValue,
-        image_url: form.image_url.trim(),
-        image_file: form.image_file ?? null
+        image_url: form.image_url.trim()
       });
       navigate("/admin/products");
     } catch (err) {
@@ -177,18 +160,6 @@ const AdminEditProductPage = () => {
               value={form.image_url}
               onChange={(event) => setForm((prev) => ({ ...prev, image_url: event.target.value }))}
             />
-          </label>
-          <label className="admin-card__field">
-            Imagen (archivo para preview)
-            <input
-              className="input admin-card__input"
-              type="file"
-              accept="image/*"
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, image_file: event.target.files?.[0] ?? null }))
-              }
-            />
-            <span className="helper-text">El archivo solo se usa para previsualizar.</span>
           </label>
           <div className="admin-card__actions">
             <button type="submit" className="button button--primary" disabled={isSaving}>

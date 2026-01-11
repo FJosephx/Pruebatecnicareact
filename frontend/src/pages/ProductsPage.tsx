@@ -99,7 +99,7 @@ const ProductsPage = () => {
       <div className="product-grid">
           {products.map((product) => {
             const initial = product.name.trim().charAt(0).toUpperCase();
-            const imageSrc = product.image_url || product.image_file_url;
+            const imageSrc = product.image_url;
             return (
               <article key={product.id} className="product-card">
                 <Link to={`/products/${product.id}`} className="product-card__media">
