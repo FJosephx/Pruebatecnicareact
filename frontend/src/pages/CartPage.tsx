@@ -60,7 +60,7 @@ const formatPrice = (value: number) => {
 };
 
 const CartPage = () => {
-  const { items, updateQuantity, removeItem } = useCart();
+  const { items, updateQuantity, removeItem, clear } = useCart();
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -88,6 +88,7 @@ const CartPage = () => {
         }))
       });
       setSaveMessage("Carrito guardado correctamente");
+      clear();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
@@ -99,6 +100,7 @@ const CartPage = () => {
     return (
       <section>
         <h2 style={{ marginTop: 0 }}>Carrito</h2>
+        {saveMessage && <p style={{ color: "#047857" }}>{saveMessage}</p>}
         <p>
           Tu carrito esta vacio. <Link to="/">Volver a productos</Link>.
         </p>
