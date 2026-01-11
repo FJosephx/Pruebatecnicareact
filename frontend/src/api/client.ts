@@ -14,10 +14,10 @@ export const apiFetch = async <T>(path: string, init?: RequestInit): Promise<T> 
     throw new Error("VITE_API_URL is not set");
   }
 
-  const headers = {
-    "Content-Type": "application/json",
-    ...(init?.headers ?? {})
-  };
+  const headers = new Headers(init?.headers);
+  if (init?.body && !headers.has("Content-Type") && !(init.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
 
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
