@@ -16,6 +16,12 @@ export const createProduct = (payload: ProductPayload) =>
     body: JSON.stringify(payload)
   });
 
+export const updateProduct = (payload: ProductPayload & { id: number }) =>
+  apiFetch<Product>("/products/update", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
 export const deleteProduct = (id: number) =>
   apiFetch<{ detail: string }>("/products/delete", {
     method: "POST",

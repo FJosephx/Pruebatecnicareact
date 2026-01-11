@@ -260,6 +260,19 @@ body {
   font-weight: 600;
 }
 
+.admin-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .admin-card__input {
   width: 100%;
 }

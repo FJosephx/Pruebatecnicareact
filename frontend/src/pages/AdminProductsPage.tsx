@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
-import { createProduct, deleteProduct, getProducts } from "../api/products";
+﻿import { useEffect, useState } from "react";
+import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
+import { createProduct, deleteProduct, getProducts, updateProduct } from "../api/products";
 import { useAuth } from "../store/auth";
 import { Product } from "../types/product";
 
+const formatPrice = (value: number) => {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS"
+  }).format(value);
+};
+
 type FormState = {
+  id?: number;
   name: string;
   price: string;
   image_url: string;
@@ -16,17 +24,11 @@ const initialForm: FormState = {
   image_url: ""
 };
 
-const formatPrice = (value: number) => {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS"
-  }).format(value);
-};
-
 const AdminProductsPage = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [form, setForm] = useState<FormState>(initialForm);
+  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,31 +50,63 @@ const AdminProductsPage = () => {
     loadProducts();
   }, []);
 
-  const handleCreate = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setIsSaving(true);
-    setError(null);
-
+  const validateForm = () => {
     const priceValue = Number(form.price);
     if (!form.name.trim() || Number.isNaN(priceValue) || priceValue <= 0) {
       setError("Completa nombre y precio valido.");
-      setIsSaving(false);
+      return null;
+    }
+    return priceValue;
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+
+    const priceValue = validateForm();
+    if (priceValue === null) {
       return;
     }
 
+    setIsSaving(true);
     try {
-      await createProduct({
-        name: form.name.trim(),
-        price: priceValue,
-        image_url: form.image_url.trim()
-      });
+      if (isEditing && form.id) {
+        await updateProduct({
+          id: form.id,
+          name: form.name.trim(),
+          price: priceValue,
+          image_url: form.image_url.trim()
+        });
+      } else {
+        await createProduct({
+          name: form.name.trim(),
+          price: priceValue,
+          image_url: form.image_url.trim()
+        });
+      }
       setForm(initialForm);
+      setIsEditing(false);
       await loadProducts();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleEdit = (product: Product) => {
+    setForm({
+      id: product.id,
+      name: product.name,
+      price: product.price.toString(),
+      image_url: product.image_url ?? ""
+    });
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setForm(initialForm);
+    setIsEditing(false);
   };
 
   const handleDelete = async (id: number) => {
@@ -100,7 +134,7 @@ const AdminProductsPage = () => {
   return (
     <section>
       <h2 className="page__title">Panel de productos</h2>
-      <form className="admin-card" onSubmit={handleCreate}>
+      <form className="admin-card" onSubmit={handleSubmit}>
         <label className="admin-card__field">
           Nombre
           <input
@@ -128,9 +162,16 @@ const AdminProductsPage = () => {
             onChange={(event) => setForm((prev) => ({ ...prev, image_url: event.target.value }))}
           />
         </label>
-        <button type="submit" className="button button--primary" disabled={isSaving}>
-          <FiPlus /> {isSaving ? "Creando..." : "Crear producto"}
-        </button>
+        <div className="admin-card__actions">
+          <button type="submit" className="button button--primary" disabled={isSaving}>
+            <FiPlus /> {isSaving ? "Guardando..." : isEditing ? "Actualizar producto" : "Crear producto"}
+          </button>
+          {isEditing && (
+            <button type="button" className="button button--ghost" onClick={handleCancel}>
+              Cancelar
+            </button>
+          )}
+        </div>
         {error && <p className="alert alert--error">Error: {error}</p>}
       </form>
 
@@ -151,13 +192,14 @@ const AdminProductsPage = () => {
                 <td data-label="Producto">{product.name}</td>
                 <td data-label="Precio">{formatPrice(product.price)}</td>
                 <td data-label="Acciones">
-                  <button
-                    type="button"
-                    className="button button--danger"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    <FiTrash2 /> Eliminar
-                  </button>
+                  <div className="admin-actions">
+                    <button type="button" className="button button--ghost" onClick={() => handleEdit(product)}>
+                      <FiEdit2 /> Editar
+                    </button>
+                    <button type="button" className="button button--danger" onClick={() => handleDelete(product.id)}>
+                      <FiTrash2 /> Eliminar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
