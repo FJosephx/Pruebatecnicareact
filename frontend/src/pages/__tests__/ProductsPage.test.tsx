@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import ProductsPage from "../ProductsPage";
+import { CartProvider } from "../../store/cart";
 
 jest.mock("../../api/products", () => ({
   getProducts: jest.fn()
@@ -13,7 +14,9 @@ const { getProducts } = jest.requireMock("../../api/products") as {
 const renderPage = () =>
   render(
     <BrowserRouter>
-      <ProductsPage />
+      <CartProvider>
+        <ProductsPage />
+      </CartProvider>
     </BrowserRouter>
   );
 
