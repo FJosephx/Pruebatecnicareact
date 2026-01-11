@@ -1,20 +1,12 @@
 from django.contrib import admin
-from django.http import JsonResponse
 from django.urls import path
 
-
-def products_list(_request):
-    return JsonResponse(
-        [
-            {"id": 1, "name": "Remera basica", "price": 7990},
-            {"id": 2, "name": "Zapatillas urbanas", "price": 42990},
-            {"id": 3, "name": "Mochila compacta", "price": 18990},
-        ],
-        safe=False,
-    )
+from products.views import products_create, products_list, products_update
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("products", products_list),
+    path("products/create", products_create),
+    path("products/update", products_update),
 ]

@@ -1,0 +1,82 @@
+import json
+from decimal import Decimal, InvalidOperation
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import Product
+
+
+def _serialize_product(product: Product) -> dict:
+    return {"id": product.id, "name": product.name, "price": float(product.price)}
+
+
+def products_list(_request):
+    products = [_serialize_product(product) for product in Product.objects.all()]
+    return JsonResponse(products, safe=False)
+
+
+@csrf_exempt
+def products_create(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON payload"}, status=400)
+
+    name = str(payload.get("name", "")).strip()
+    price = payload.get("price")
+
+    if not name:
+        return JsonResponse({"detail": "Name is required"}, status=400)
+
+    try:
+        price_value = Decimal(str(price))
+    except (InvalidOperation, TypeError):
+        return JsonResponse({"detail": "Price must be a number"}, status=400)
+
+    if price_value <= 0:
+        return JsonResponse({"detail": "Price must be greater than 0"}, status=400)
+
+    product = Product.objects.create(name=name, price=price_value)
+    return JsonResponse(_serialize_product(product), status=201)
+
+
+@csrf_exempt
+def products_update(request):
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON payload"}, status=400)
+
+    product_id = payload.get("id")
+    if not product_id:
+        return JsonResponse({"detail": "Product id is required"}, status=400)
+
+    product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return JsonResponse({"detail": "Product not found"}, status=404)
+
+    if "name" in payload:
+        name = str(payload.get("name", "")).strip()
+        if not name:
+            return JsonResponse({"detail": "Name is required"}, status=400)
+        product.name = name
+
+    if "price" in payload:
+        try:
+            price_value = Decimal(str(payload.get("price")))
+        except (InvalidOperation, TypeError):
+            return JsonResponse({"detail": "Price must be a number"}, status=400)
+
+        if price_value <= 0:
+            return JsonResponse({"detail": "Price must be greater than 0"}, status=400)
+        product.price = price_value
+
+    product.save()
+    return JsonResponse(_serialize_product(product))
