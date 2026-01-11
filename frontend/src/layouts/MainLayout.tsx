@@ -62,7 +62,14 @@ const MainLayout = () => {
             </Link>
             <Link to="/cart" style={linkStyle}>
               Carrito
-              {itemCount > 0 && <span style={{ marginLeft: "0.5rem" }}><span style={badgeStyle}>{itemCount}</span></span>}
+              {itemCount > 0 && (
+                <span style={{ marginLeft: "0.5rem" }}>
+                  <span style={badgeStyle}>{itemCount}</span>
+                </span>
+              )}
+            </Link>
+            <Link to="/admin/products" style={linkStyle}>
+              Panel
             </Link>
           </nav>
         </div>
