@@ -8,7 +8,12 @@ from .models import Product
 
 
 def _serialize_product(product: Product) -> dict:
-    return {"id": product.id, "name": product.name, "price": float(product.price)}
+    return {
+        "id": product.id,
+        "name": product.name,
+        "price": float(product.price),
+        "image_url": product.image_url,
+    }
 
 
 def _ensure_staff(request):
@@ -38,6 +43,7 @@ def products_create(request):
 
     name = str(payload.get("name", "")).strip()
     price = payload.get("price")
+    image_url = str(payload.get("image_url", "")).strip()
 
     if not name:
         return JsonResponse({"detail": "Name is required"}, status=400)
@@ -50,7 +56,7 @@ def products_create(request):
     if price_value <= 0:
         return JsonResponse({"detail": "Price must be greater than 0"}, status=400)
 
-    product = Product.objects.create(name=name, price=price_value)
+    product = Product.objects.create(name=name, price=price_value, image_url=image_url)
     return JsonResponse(_serialize_product(product), status=201)
 
 
@@ -91,6 +97,9 @@ def products_update(request):
         if price_value <= 0:
             return JsonResponse({"detail": "Price must be greater than 0"}, status=400)
         product.price = price_value
+
+    if "image_url" in payload:
+        product.image_url = str(payload.get("image_url", "")).strip()
 
     product.save()
     return JsonResponse(_serialize_product(product))

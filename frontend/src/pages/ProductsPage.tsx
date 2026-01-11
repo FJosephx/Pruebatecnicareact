@@ -71,7 +71,18 @@ const ProductsPage = () => {
             const initial = product.name.trim().charAt(0).toUpperCase();
             return (
               <article key={product.id} className="product-card">
-                <div className="product-card__media">{initial || "P"}</div>
+                <div className="product-card__media">
+                  {product.image_url ? (
+                    <img
+                      className="product-card__image"
+                      src={product.image_url}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span>{initial || "P"}</span>
+                  )}
+                </div>
                 <div className="product-card__body">
                   <div>
                     <h3 className="product-card__title">{product.name}</h3>
