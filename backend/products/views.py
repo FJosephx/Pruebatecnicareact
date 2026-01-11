@@ -27,6 +27,17 @@ def products_list(_request):
     return JsonResponse(products, safe=False)
 
 
+def products_detail(request, product_id: int):
+    if request.method != "GET":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    product = Product.objects.filter(id=product_id).first()
+    if not product:
+        return JsonResponse({"detail": "Product not found"}, status=404)
+
+    return JsonResponse(_serialize_product(product))
+
+
 @csrf_exempt
 def products_create(request):
     forbidden = _ensure_staff(request)

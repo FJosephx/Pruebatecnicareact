@@ -3,7 +3,7 @@ from django.urls import path
 
 from authentication.views import login_view, logout_view, me_view
 from carts.views import cart_create, cart_delete, cart_update, carts_list
-from products.views import products_create, products_delete, products_list, products_update
+from products.views import products_create, products_delete, products_detail, products_list, products_update
 
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path("auth/logout", logout_view),
     path("auth/me", me_view),
     path("products", products_list),
+    path("products/<int:product_id>", products_detail),
     path("products/create", products_create),
     path("products/update", products_update),
     path("products/delete", products_delete),
