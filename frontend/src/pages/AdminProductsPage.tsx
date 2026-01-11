@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
-import { createProduct, deleteProduct, getProducts, updateProduct } from "../api/products";
+import { createProduct, deleteProduct, getProducts } from "../api/products";
 import { useAuth } from "../store/auth";
 import { Product } from "../types/product";
 
@@ -12,7 +13,6 @@ const formatPrice = (value: number) => {
 };
 
 type FormState = {
-  id?: number;
   name: string;
   price: string;
   image_url: string;
@@ -28,7 +28,6 @@ const AdminProductsPage = () => {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [form, setForm] = useState<FormState>(initialForm);
-  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,63 +49,30 @@ const AdminProductsPage = () => {
     loadProducts();
   }, []);
 
-  const validateForm = () => {
-    const priceValue = Number(form.price);
-    if (!form.name.trim() || Number.isNaN(priceValue) || priceValue <= 0) {
-      setError("Completa nombre y precio valido.");
-      return null;
-    }
-    return priceValue;
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
 
-    const priceValue = validateForm();
-    if (priceValue === null) {
+    const priceValue = Number(form.price);
+    if (!form.name.trim() || Number.isNaN(priceValue) || priceValue <= 0) {
+      setError("Completa nombre y precio valido.");
       return;
     }
 
     setIsSaving(true);
     try {
-      if (isEditing && form.id) {
-        await updateProduct({
-          id: form.id,
-          name: form.name.trim(),
-          price: priceValue,
-          image_url: form.image_url.trim()
-        });
-      } else {
-        await createProduct({
-          name: form.name.trim(),
-          price: priceValue,
-          image_url: form.image_url.trim()
-        });
-      }
+      await createProduct({
+        name: form.name.trim(),
+        price: priceValue,
+        image_url: form.image_url.trim()
+      });
       setForm(initialForm);
-      setIsEditing(false);
       await loadProducts();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleEdit = (product: Product) => {
-    setForm({
-      id: product.id,
-      name: product.name,
-      price: product.price.toString(),
-      image_url: product.image_url ?? ""
-    });
-    setIsEditing(true);
-  };
-
-  const handleCancel = () => {
-    setForm(initialForm);
-    setIsEditing(false);
   };
 
   const handleDelete = async (id: number) => {
@@ -134,7 +100,7 @@ const AdminProductsPage = () => {
   return (
     <section>
       <h2 className="page__title">Panel de productos</h2>
-      <form className="admin-card" onSubmit={handleSubmit}>
+      <form className="admin-card" onSubmit={handleCreate}>
         <label className="admin-card__field">
           Nombre
           <input
@@ -164,13 +130,8 @@ const AdminProductsPage = () => {
         </label>
         <div className="admin-card__actions">
           <button type="submit" className="button button--primary" disabled={isSaving}>
-            <FiPlus /> {isSaving ? "Guardando..." : isEditing ? "Actualizar producto" : "Crear producto"}
+            <FiPlus /> {isSaving ? "Creando..." : "Crear producto"}
           </button>
-          {isEditing && (
-            <button type="button" className="button button--ghost" onClick={handleCancel}>
-              Cancelar
-            </button>
-          )}
         </div>
         {error && <p className="alert alert--error">Error: {error}</p>}
       </form>
@@ -193,9 +154,9 @@ const AdminProductsPage = () => {
                 <td data-label="Precio">{formatPrice(product.price)}</td>
                 <td data-label="Acciones">
                   <div className="admin-actions">
-                    <button type="button" className="button button--ghost" onClick={() => handleEdit(product)}>
+                    <Link to={`/admin/products/${product.id}/edit`} className="button button--ghost">
                       <FiEdit2 /> Editar
-                    </button>
+                    </Link>
                     <button type="button" className="button button--danger" onClick={() => handleDelete(product.id)}>
                       <FiTrash2 /> Eliminar
                     </button>
