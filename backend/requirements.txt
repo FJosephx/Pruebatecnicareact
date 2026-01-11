@@ -1,2 +1,4 @@
 Django>=4.2,<5.0
 django-cors-headers>=4.3,<5.0
+pytest>=7.4,<9.0
+pytest-django>=4.7,<5.0
