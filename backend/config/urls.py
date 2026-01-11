@@ -1,12 +1,16 @@
 ﻿from django.contrib import admin
 from django.urls import path
 
+from authentication.views import login_view, logout_view, me_view
 from carts.views import cart_create, cart_delete, cart_update, carts_list
 from products.views import products_create, products_list, products_update
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("auth/login", login_view),
+    path("auth/logout", logout_view),
+    path("auth/me", me_view),
     path("products", products_list),
     path("products/create", products_create),
     path("products/update", products_update),

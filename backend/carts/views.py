@@ -63,6 +63,9 @@ def carts_list(request):
     if request.method != "GET":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Not authenticated"}, status=401)
+
     page = int(request.GET.get("page", 1))
     page_size = int(request.GET.get("page_size", 10))
     product_id = request.GET.get("product_id")
@@ -108,6 +111,9 @@ def cart_create(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
 
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Not authenticated"}, status=401)
+
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
     except json.JSONDecodeError:
@@ -135,6 +141,9 @@ def cart_create(request):
 def cart_update(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Not authenticated"}, status=401)
 
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
@@ -172,6 +181,9 @@ def cart_update(request):
 def cart_delete(request):
     if request.method != "POST":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"detail": "Not authenticated"}, status=401)
 
     try:
         payload = json.loads(request.body.decode("utf-8") or "{}")
