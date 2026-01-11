@@ -1,5 +1,5 @@
 ﻿import { Link, Outlet } from "react-router-dom";
-import { FiLogIn, FiLogOut, FiPackage, FiShoppingCart } from "react-icons/fi";
+import { FiLogIn, FiLogOut, FiPackage, FiSettings, FiShoppingCart } from "react-icons/fi";
 import { useAuth } from "../store/auth";
 import { useCart } from "../store/cart";
 
@@ -23,6 +23,11 @@ const MainLayout = () => {
               <FiShoppingCart /> Carrito
               {itemCount > 0 && <span className="nav__badge">{itemCount}</span>}
             </Link>
+            {user?.is_staff && (
+              <Link to="/admin/products" className="nav__link">
+                <FiSettings /> Admin
+              </Link>
+            )}
             {!isLoading && user ? (
               <button type="button" className="button button--ghost" onClick={logout}>
                 <FiLogOut /> {user.username}

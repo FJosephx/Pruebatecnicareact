@@ -3,6 +3,7 @@ import MainLayout from "./layouts/MainLayout";
 import ProductsPage from "./pages/ProductsPage";
 import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
+import AdminProductsPage from "./pages/AdminProductsPage";
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <Route path="/" element={<ProductsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin/products" element={<AdminProductsPage />} />
       </Route>
     </Routes>
   );

@@ -242,6 +242,28 @@ body {
   max-width: 420px;
 }
 
+.admin-card {
+  background: #ffffff;
+  padding: 1.6rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.admin-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.admin-card__input {
+  width: 100%;
+}
+
 .auth-card__field {
   display: flex;
   flex-direction: column;
