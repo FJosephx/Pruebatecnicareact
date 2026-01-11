@@ -8,6 +8,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "corsheaders",
+    "carts",
     "products",
     "django.contrib.admin",
     "django.contrib.auth",
