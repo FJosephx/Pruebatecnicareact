@@ -103,3 +103,28 @@ def products_update(request):
 
     product.save()
     return JsonResponse(_serialize_product(product))
+
+
+@csrf_exempt
+def products_delete(request):
+    forbidden = _ensure_staff(request)
+    if forbidden:
+        return forbidden
+
+    if request.method != "POST":
+        return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON payload"}, status=400)
+
+    product_id = payload.get("id")
+    if not product_id:
+        return JsonResponse({"detail": "Product id is required"}, status=400)
+
+    deleted, _ = Product.objects.filter(id=product_id).delete()
+    if not deleted:
+        return JsonResponse({"detail": "Product not found"}, status=404)
+
+    return JsonResponse({"detail": "Product deleted"})
